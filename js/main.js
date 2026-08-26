@@ -1,70 +1,13 @@
-
-document.addEventListener('DOMContentLoaded', () => {
-  const header = document.querySelector('.site-header');
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImage = document.getElementById('lightboxImage');
-  const lightboxTitle = document.getElementById('lightboxTitle');
-
-  function updateHeader() {
-    header?.classList.toggle('scrolled', window.scrollY > 12);
-  }
-  updateHeader();
-  window.addEventListener('scroll', updateHeader, { passive: true });
-
-  function openLightbox(src, title, alt = title) {
-    if (!lightbox) return;
-    lightboxImage.src = src;
-    lightboxImage.alt = alt;
-    lightboxTitle.textContent = title || '';
-    lightbox.classList.add('open');
-    lightbox.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeLightbox() {
-    if (!lightbox) return;
-    lightbox.classList.remove('open');
-    lightbox.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-    lightboxImage.src = '';
-  }
-
-  document.querySelectorAll('[data-lightbox]').forEach(trigger => {
-    trigger.addEventListener('click', () => {
-      const img = trigger.querySelector('img');
-      openLightbox(trigger.dataset.lightbox, trigger.dataset.title, img?.alt || trigger.dataset.title);
-    });
-  });
-
-  document.querySelectorAll('[data-close-lightbox]').forEach(el => el.addEventListener('click', closeLightbox));
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') closeLightbox();
-  });
-
-  // I validate the form here first, then let the real form submission go to the email service.
-  const form = document.getElementById('contactForm');
-  if (form) {
-    form.addEventListener('submit', event => {
-      event.preventDefault();
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const message = form.message.value.trim();
-      const errors = { name: '', email: '', message: '' };
-
-      if (!name) errors.name = 'Please enter your name.';
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = 'Please enter a valid email.';
-      if (!message) errors.message = 'Please enter a message.';
-
-      Object.entries(errors).forEach(([field, text]) => {
-        const node = document.querySelector(`[data-error-for="${field}"]`);
-        if (node) node.textContent = text;
-      });
-
-      if (Object.values(errors).some(Boolean)) return;
-
-      const status = document.getElementById('formStatus');
-      if (status) status.textContent = 'Sending your message…';
-      form.submit();
-    });
-  }
-});
+const pages=[['index.html','Home'],['about.html','About'],['skills.html','Skills'],['projects.html','Projects'],['experience.html','Experience'],['certificates.html','Credentials'],['gallery.html','Gallery'],['cv.html','CV'],['contact.html','Contact']];
+const current=document.body.dataset.page||location.pathname.split('/').pop()||'index.html';
+const nav=pages.map(([href,label])=>`<a href="${href}" class="${current===href?'active':''}">${label}</a>`).join('');
+document.getElementById('site-header').innerHTML=`<header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">FM</span><span>Fredrick Muema Musyoki<small>ICT • AI • Builder</small></span></a><nav class="nav" aria-label="Primary">${nav}</nav><button class="header-cta" data-command>COMMAND ⌘K</button></header>`;
+document.getElementById('site-footer').innerHTML=`<footer class="exclusive-footer"><div class="container footer-main"><div><div class="footer-brand">Fredrick Muema Musyoki.</div><p class="footer-lead">A portfolio built around a simple idea: real context, real progress, and an interface that feels alive. Technology is the craft; curiosity is the engine.</p><a class="btn btn-cyan" href="contact.html">Start a conversation ↗</a></div><div><div class="footer-title">Explore</div><div class="footer-links">${pages.slice(0,6).map(p=>`<a href="${p[0]}">${p[1]}</a>`).join('')}</div></div><div><div class="footer-title">Connect</div><div class="footer-links"><a href="mailto:fredrickmuema56@gmail.com">Email me</a><a href="tel:+254768671135">Call +254 768 671 135</a><a href="cv.html">View CV</a><a href="gallery.html">Photo archive</a></div></div><div class="footer-orbit"><div class="planet"></div></div></div><div class="container footer-bottom"><span><strong>FM / 2026</strong> • Nairobi, Kenya • Built to keep evolving.</span><span>SCI — Strategic Cognitive Intelligence • Flagship exploration</span></div></footer>`;
+const command=`<div class="command" id="command"><div class="command-box"><input id="commandInput" placeholder="Jump to a page…" aria-label="Command search"><div class="command-list">${pages.map(p=>`<a href="${p[0]}" data-command-link>${p[1]}</a>`).join('')}</div></div></div>`;document.body.insertAdjacentHTML('beforeend',command);
+const modal=document.getElementById('command'),input=document.getElementById('commandInput');
+function openCommand(){modal.classList.add('open');setTimeout(()=>input.focus(),30)}function closeCommand(){modal.classList.remove('open')}
+document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',openCommand));document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCommand()}if(e.key==='Escape')closeCommand()});modal.addEventListener('click',e=>{if(e.target===modal)closeCommand()});input.addEventListener('input',()=>{const q=input.value.toLowerCase();document.querySelectorAll('[data-command-link]').forEach(a=>a.style.display=a.textContent.toLowerCase().includes(q)?'block':'none')});
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>e.isIntersecting&&e.target.classList.add('visible')),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+const line=document.createElement('div');line.className='scroll-line';document.body.appendChild(line);addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-innerHeight;line.style.width=(h>0?scrollY/h*100:0)+'%'},{passive:true});
+const stage=document.querySelector('.portrait-wrap');if(stage){addEventListener('pointermove',e=>{const x=(e.clientX/innerWidth-.5)*10,y=(e.clientY/innerHeight-.5)*-8;stage.style.transform=`rotateY(${x}deg) rotateX(${y}deg)`});}
+const lightbox=document.createElement('div');lightbox.className='lightbox';lightbox.innerHTML='<button class="lightbox-close" aria-label="Close">×</button><img alt="">';document.body.appendChild(lightbox);const lbImg=lightbox.querySelector('img');document.querySelectorAll('[data-lightbox]').forEach(el=>el.addEventListener('click',()=>{lbImg.src=el.dataset.lightbox;lbImg.alt=el.dataset.title||'';lightbox.classList.add('open')}));lightbox.addEventListener('click',e=>{if(e.target===lightbox||e.target.classList.contains('lightbox-close'))lightbox.classList.remove('open')});
