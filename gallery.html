@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Gallery — Fredrick Muema Musyoki</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body data-page="gallery.html">
+    <div class="page-bg bg-gallery"></div>
+    <div id="three-bg"></div>
+    <div id="site-header"></div>
+    <main>
+      <div class="container page-head">
+        <div class="reveal"><span class="kicker">GALLERY / 06</span>
+          <h1>Different contexts. <span class="accent">Same person.</span></h1>
+        </div>
+        <p class="lead reveal">Formal, smart casual, outdoors, and everyday Fredrick — arranged as a visual archive rather than a standard grid.</p>
+      </div>
+      <section class="section">
+        <div class="container gallery-grid">${''}</div>
+      </section>
+    </main>
+    <div id="site-footer"></div>
+    <script>document.addEventListener('DOMContentLoaded', () => {
+  const files = [['images/profile/hero.jpeg', 'Formal / 01'], ['images/profile/home-hero.jpeg', 'Outdoors / 02'], ['images/profile/vest.jpeg', 'Waistcoat / 03'], ['images/profile/black-shirt.jpeg', 'Black shirt / 04'], ['images/profile/closeup.jpeg', 'Close-up / 05'], ['images/profile/casual-full.jpeg', 'Casual / 06'], ['images/profile/bucket-hat.jpeg', 'Everyday / 07'], ['images/profile/casual-orange.jpeg', 'Casual orange / 08'], ['images/profile/seated-orange.jpeg', 'Formal seated / 09'], ['images/profile/hoodie.jpeg', 'Hoodie / 10']];
+  document.querySelector('.gallery-grid').innerHTML = files.map(([src, t], i) => `<figure class="gallery-item reveal" data-lightbox="${src}" data-title="${t}"><img src="${src}" alt="Fredrick Musyoki — ${t}" loading="lazy"><figcaption>${t}</figcaption></figure>`).join('');
+  document.querySelectorAll('.reveal').forEach(el => new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('visible')), { threshold: .1 }).observe(el));
+});
+</script><script src="js/main.js" defer></script><script src="js/scene.js" defer></script>
+  </body>
+</html>
