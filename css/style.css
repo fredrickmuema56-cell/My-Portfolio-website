@@ -164,25 +164,25 @@ main {
   background-image: url('../assets/backgrounds/about.png');
 }
 .bg-skills {
-  background-image: url('https://images.unsplash.com/photo-1624378804433-656379d28147?auto=format&fit=crop&w=2400&q=82');
+  background-image: url('../assets/backgrounds/skills.png');
 }
 .bg-experience {
-  background-image: url('https://images.unsplash.com/photo-1559825481-12a05cc00344?auto=format&fit=crop&w=2400&q=82');
+  background-image: url('../assets/backgrounds/experience.png');
 }
 .bg-certificates {
-  background-image: url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=2400&q=82');
+  background-image: url('../assets/backgrounds/certificates.png');
 }
 .bg-gallery {
-  background-image: url('https://images.unsplash.com/photo-1559825481-12a05cc00344?auto=format&fit=crop&w=2400&q=82');
+  background-image: url('../assets/backgrounds/gallery.png');
 }
 .bg-contact {
-  background-image: url('https://images.unsplash.com/photo-1700554329693-d50e509ed870?auto=format&fit=crop&w=2400&q=82');
+  background-image: url('../assets/backgrounds/contact.png');
 }
 .bg-cv {
   background: linear-gradient(135deg,#dcefe9,#f5f0e5 55%,#e6d9c3);
 }
 .bg-projects {
-  background-image: url('https://images.unsplash.com/photo-1701906268643-1310a1436832?auto=format&fit=crop&w=2400&q=82');
+ background-image: url('../assets/backgrounds/projects.png');
   background-color: #cfeeea;
 }
 .bg-projects:after {
