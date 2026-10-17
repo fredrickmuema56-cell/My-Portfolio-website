@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Gallery — Fredrick Muema Musyoki</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css"><link id="dark-theme" rel="stylesheet" href="css/redesign.css"><link rel="stylesheet" href="css/theme.css"><script src="js/theme-init.js"></script>
   </head>
   <body data-page="gallery.html">
     <div class="page-bg bg-gallery"></div>
@@ -27,6 +27,6 @@
   document.querySelector('.gallery-grid').innerHTML = files.map(([src, t], i) => `<figure class="gallery-item reveal" data-lightbox="${src}" data-title="${t}"><img src="${src}" alt="Fredrick Musyoki — ${t}" loading="lazy"><figcaption>${t}</figcaption></figure>`).join('');
   document.querySelectorAll('.reveal').forEach(el => new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('visible')), { threshold: .1 }).observe(el));
 });
-</script><script src="js/main.js" defer></script><script src="js/scene.js" defer></script>
+</script><script src="js/main.js" defer></script><script src="js/scene.js" defer></script><script src="js/stars.js" defer></script><script src="js/theme.js" defer></script>
   </body>
 </html>

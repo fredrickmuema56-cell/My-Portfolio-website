@@ -1,4 +1,5 @@
 (async () => {
+  if (document.documentElement.dataset.theme !== 'light') return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mobile = matchMedia('(max-width: 640px)').matches;
   const mount = document.getElementById('three-bg');

@@ -145,3 +145,46 @@
     top: -48px;
   }
 }
+
+
+/* CV page: mobile layout fix only */
+@media (max-width: 680px) {
+  body[data-page="cv.html"] .cv-paper {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  body[data-page="cv.html"] .cv-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  body[data-page="cv.html"] .cv-contact {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  body[data-page="cv.html"] .cv-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-page="cv.html"] .cv-grid > *,
+  body[data-page="cv.html"] .cv-head > * {
+    min-width: 0;
+  }
+
+  body[data-page="cv.html"] .timeline-item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  body[data-page="cv.html"] .tags {
+    flex-wrap: wrap;
+  }
+
+  body[data-page="cv.html"] {
+    overflow-x: hidden;
+  }
+}
