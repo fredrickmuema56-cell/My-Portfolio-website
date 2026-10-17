@@ -158,10 +158,10 @@ main {
   background: linear-gradient(90deg,rgba(255,250,240,.50),rgba(255,250,240,.24) 45%,rgba(255,250,240,.10)),linear-gradient(0deg,rgba(245,240,229,.42),transparent 55%,rgba(16,32,31,.03));
 }
 .bg-home {
-  background-image: url('https://images.unsplash.com/photo-1708885930153-63a38ef44a2d?auto=format&fit=crop&w=2400&q=82');
+  background-image: url('../assets/backgrounds/home.png');
 }
 .bg-about {
-  background-image: url('https://images.unsplash.com/photo-1701906268643-1310a1436832?auto=format&fit=crop&w=2400&q=82');
+  background-image: url('../assets/backgrounds/about.png');
 }
 .bg-skills {
   background-image: url('https://images.unsplash.com/photo-1624378804433-656379d28147?auto=format&fit=crop&w=2400&q=82');
