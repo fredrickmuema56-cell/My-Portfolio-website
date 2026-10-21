@@ -68,20 +68,45 @@ mobileSidebarEl?.querySelectorAll('a').forEach(a => a.addEventListener('click', 
 const observer = new IntersectionObserver(entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')), { threshold: .12 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+// Keep scroll-linked work to at most one update per animation frame.
+// Transforming the progress line avoids recalculating its layout width on every scroll event.
 const line = document.createElement('div');
 line.className = 'scroll-line';
 document.body.appendChild(line);
-addEventListener('scroll', () => {
-  const h = document.documentElement.scrollHeight - innerHeight;
-  line.style.width = (h > 0 ? scrollY / h * 100 : 0) + '%'
-}, { passive: true });
+
+let scrollFrame = 0;
+function updateScrollProgress() {
+  scrollFrame = 0;
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0;
+  line.style.transform = `scaleX(${progress})`;
+}
+function scheduleScrollProgress() {
+  if (!scrollFrame) scrollFrame = requestAnimationFrame(updateScrollProgress);
+}
+window.addEventListener('scroll', scheduleScrollProgress, { passive: true });
+window.addEventListener('resize', scheduleScrollProgress, { passive: true });
+scheduleScrollProgress();
 
 const stage = document.querySelector('.portrait-wrap');
 if (stage) {
-  addEventListener('pointermove', e => {
-    const x = (e.clientX / innerWidth - .5) * 10, y = (e.clientY / innerHeight - .5) * -8;
-    stage.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`
-  });
+  let pointerFrame = 0;
+  let pointerX = 0;
+  let pointerY = 0;
+
+  window.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    pointerX = e.clientX;
+    pointerY = e.clientY;
+    if (pointerFrame) return;
+
+    pointerFrame = requestAnimationFrame(() => {
+      pointerFrame = 0;
+      const x = (pointerX / Math.max(1, window.innerWidth) - .5) * 10;
+      const y = (pointerY / Math.max(1, window.innerHeight) - .5) * -8;
+      stage.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    });
+  }, { passive: true });
 }
 
 const lightbox = document.createElement('div');
