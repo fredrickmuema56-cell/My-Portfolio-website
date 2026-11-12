@@ -24,8 +24,20 @@
     <div id="site-footer"></div>
     <script>document.addEventListener('DOMContentLoaded', () => {
   const files = [['images/profile/hero.jpeg', 'Formal / 01'], ['images/profile/home-hero.jpeg', 'Outdoors / 02'], ['images/profile/vest.jpeg', 'Waistcoat / 03'], ['images/profile/black-shirt.jpeg', 'Black shirt / 04'], ['images/profile/closeup.jpeg', 'Close-up / 05'], ['images/profile/casual-full.jpeg', 'Casual / 06'], ['images/profile/bucket-hat.jpeg', 'Everyday / 07'], ['images/profile/casual-orange.jpeg', 'Casual orange / 08'], ['images/profile/seated-orange.jpeg', 'Formal seated / 09'], ['images/profile/hoodie.jpeg', 'Hoodie / 10']];
-  document.querySelector('.gallery-grid').innerHTML = files.map(([src, t], i) => `<figure class="gallery-item reveal" data-lightbox="${src}" data-title="${t}"><img src="${src}" alt="Fredrick Musyoki — ${t}" loading="lazy"><figcaption>${t}</figcaption></figure>`).join('');
-  document.querySelectorAll('.reveal').forEach(el => new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('visible')), { threshold: .1 }).observe(el));
+  document.querySelector('.gallery-grid').innerHTML = files.map(([src, t], i) => `<figure class="gallery-item reveal" data-lightbox="${src}" data-title="${t}"><img decoding="async" src="${src}" alt="Fredrick Musyoki — ${t}" loading="lazy"><figcaption>${t}</figcaption></figure>`).join('');
+  const galleryItems = document.querySelectorAll('.gallery-item.reveal');
+  if ('IntersectionObserver' in window) {
+    const galleryObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('visible');
+        galleryObserver.unobserve(entry.target);
+      });
+    }, { threshold: .12 });
+    galleryItems.forEach(item => galleryObserver.observe(item));
+  } else {
+    galleryItems.forEach(item => item.classList.add('visible'));
+  }
 });
 </script><script src="js/main.js" defer></script><script src="js/scene.js" defer></script><script src="js/stars.js" defer></script><script src="js/theme.js" defer></script>
   </body>

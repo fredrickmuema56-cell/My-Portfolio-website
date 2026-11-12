@@ -65,8 +65,18 @@ document.querySelector('.mobile-sidebar-close')?.addEventListener('click', close
 document.querySelector('[data-mobile-close]')?.addEventListener('click', closeMobileSidebar);
 mobileSidebarEl?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileSidebar));
 
-const observer = new IntersectionObserver(entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')), { threshold: .12 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: .12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+} else {
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+}
 
 // Keep scroll-linked work to at most one update per animation frame.
 // Transforming the progress line avoids recalculating its layout width on every scroll event.

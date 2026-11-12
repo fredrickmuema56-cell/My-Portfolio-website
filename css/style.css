@@ -158,31 +158,31 @@ main {
   background: linear-gradient(90deg,rgba(255,250,240,.50),rgba(255,250,240,.24) 45%,rgba(255,250,240,.10)),linear-gradient(0deg,rgba(245,240,229,.42),transparent 55%,rgba(16,32,31,.03));
 }
 .bg-home {
-  background-image: url('../assets/backgrounds/home.png');
+  background-image: url('../assets/backgrounds/home.webp');
 }
 .bg-about {
-  background-image: url('../assets/backgrounds/about.png');
+  background-image: url('../assets/backgrounds/about.webp');
 }
 .bg-skills {
-  background-image: url('../assets/backgrounds/skills.png');
+  background-image: url('../assets/backgrounds/skills.webp');
 }
 .bg-experience {
-  background-image: url('../assets/backgrounds/experience.png');
+  background-image: url('../assets/backgrounds/experience.webp');
 }
 .bg-certificates {
-  background-image: url('../assets/backgrounds/certificates.png');
+  background-image: url('../assets/backgrounds/certificates.webp');
 }
 .bg-gallery {
-  background-image: url('../assets/backgrounds/gallery.png');
+  background-image: url('../assets/backgrounds/gallery.webp');
 }
 .bg-contact {
-  background-image: url('../assets/backgrounds/contact.png');
+  background-image: url('../assets/backgrounds/contact.webp');
 }
 .bg-cv {
   background: linear-gradient(135deg,#dcefe9,#f5f0e5 55%,#e6d9c3);
 }
 .bg-projects {
- background-image: url('../assets/backgrounds/projects.png');
+ background-image: url('../assets/backgrounds/projects.webp');
   background-color: #cfeeea;
 }
 .bg-projects:after {

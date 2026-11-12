@@ -3,9 +3,15 @@
 (() => {
   if (document.documentElement.dataset.theme !== 'dark') return;
   const mount = document.getElementById('three-bg');
-  if (!mount) return;
+  if (!mount || getComputedStyle(mount).display === 'none') return;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const smallScreen = window.matchMedia('(max-width: 640px)').matches;
+  const lowPower = smallScreen ||
+    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+    (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
+    Boolean(navigator.connection && navigator.connection.saveData);
+  const frameInterval = lowPower ? 1000 / 30 : 1000 / 60;
+  let lastFrame = 0;
   const canvas = document.createElement('canvas');
   canvas.className = 'nebula-canvas';
   canvas.setAttribute('aria-hidden', 'true');
@@ -38,6 +44,11 @@
       vx: rand(-4.4, -2.5), vy: rand(2.1, 4.2), life: 0, max: rand(30, 48) });
   }
   function draw(now) {
+    if (!reduceMotion && now - lastFrame < frameInterval) {
+      raf = requestAnimationFrame(draw);
+      return;
+    }
+    lastFrame = now;
     ctx.clearRect(0, 0, w, h);
     const driftX = pointerX * 8, driftY = pointerY * 5;
     for (const s of stars) {
@@ -69,8 +80,12 @@
     pointerY = (e.clientY / Math.max(1, h) - .5) * 2;
   }, { passive: true });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) cancelAnimationFrame(raf);
-    else if (!reduceMotion) raf = requestAnimationFrame(draw);
+    if (document.hidden) {
+      cancelAnimationFrame(raf);
+    } else if (!reduceMotion) {
+      lastFrame = 0;
+      raf = requestAnimationFrame(draw);
+    }
   });
   resize();
   if (reduceMotion) draw(0); else raf = requestAnimationFrame(draw);

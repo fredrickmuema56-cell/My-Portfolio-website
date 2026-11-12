@@ -2,8 +2,12 @@
   if (document.documentElement.dataset.theme !== 'light') return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mobile = matchMedia('(max-width: 640px)').matches;
+  const lowPower =
+    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+    (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
+    Boolean(navigator.connection && navigator.connection.saveData);
   const mount = document.getElementById('three-bg');
-  if (!mount || reduce || mobile)
+  if (!mount || reduce || mobile || getComputedStyle(mount).display === 'none')
     return;
   try {
     const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
@@ -11,7 +15,7 @@
     canvas.className = 'three-canvas';
     mount.appendChild(canvas);
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(devicePixelRatio, lowPower ? 1 : 1.5));
     renderer.setSize(innerWidth, innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     const scene = new THREE.Scene();
@@ -31,7 +35,7 @@
     ring2.rotation.x = .6;
     ring2.rotation.z = .4;
     group.add(ring2);
-    const pts = new Float32Array((reduce ? 700 : 1500) * 3);
+    const pts = new Float32Array((lowPower ? 500 : 1500) * 3);
     for (let i = 0; i < pts.length; i += 3) {
       const r = 18 + Math.random() * 50, a = Math.random() * Math.PI * 2;
       pts[i] = Math.cos(a) * r;
@@ -52,14 +56,26 @@
     addEventListener('pointermove', e => {
       mx = (e.clientX / innerWidth - .5);
       my = (e.clientY / innerHeight - .5)
-    });
+    }, { passive: true });
     addEventListener('resize', () => {
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight)
-    });
+    }, { passive: true });
     const clock = new THREE.Clock();
-    function tick() {
+    const frameInterval = lowPower ? 1000 / 30 : 1000 / 60;
+    let lastRender = 0;
+    let frameId = 0;
+    function tick(now) {
+      if (document.hidden) {
+        frameId = 0;
+        return;
+      }
+      if (now - lastRender < frameInterval) {
+        frameId = requestAnimationFrame(tick);
+        return;
+      }
+      lastRender = now;
       const t = clock.getElapsedTime();
       group.rotation.y = t * .08 + mx * .35;
       group.rotation.x = -my * .15;
@@ -71,8 +87,17 @@
       camera.position.y += (-my * .8 - camera.position.y) * .03;
       camera.lookAt(0, 0, 0);
       renderer.render(scene, camera);
-      requestAnimationFrame(tick)
+      frameId = requestAnimationFrame(tick);
     }
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(frameId);
+        frameId = 0;
+      } else if (!frameId) {
+        lastRender = 0;
+        frameId = requestAnimationFrame(tick);
+      }
+    });
     tick()
   } catch (e) {
     console.warn('3D enhancement unavailable', e)
