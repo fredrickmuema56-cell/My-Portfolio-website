@@ -10,7 +10,7 @@
     (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
     (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
     Boolean(navigator.connection && navigator.connection.saveData);
-  const frameInterval = lowPower ? 1000 / 30 : 1000 / 60;
+  const frameInterval = lowPower ? 1000 / 24 : 1000 / 45;
   let lastFrame = 0;
   const canvas = document.createElement('canvas');
   canvas.className = 'nebula-canvas';
@@ -21,7 +21,7 @@
 
   let w = 0, h = 0, dpr = 1, stars = [], meteors = [], raf = 0, lastMeteor = 0;
   let pointerX = 0, pointerY = 0;
-  const count = reduceMotion ? 36 : (smallScreen ? 58 : 115);
+  const count = reduceMotion ? 24 : (lowPower ? 28 : 88);
   const rand = (a, b) => a + Math.random() * (b - a);
 
   function resize() {
@@ -50,7 +50,7 @@
     }
     lastFrame = now;
     ctx.clearRect(0, 0, w, h);
-    const driftX = pointerX * 8, driftY = pointerY * 5;
+    const driftX = lowPower ? 0 : pointerX * 5, driftY = lowPower ? 0 : pointerY * 3;
     for (const s of stars) {
       if (!reduceMotion) { s.y += s.speed * .12; if (s.y > h + 2) s.y = -2; }
       const twinkle = reduceMotion ? .5 : .34 + (Math.sin(now * .0012 + s.phase) + 1) * .22;
@@ -59,7 +59,7 @@
       ctx.fillStyle = s.tint === 'gold' ? `rgba(255,209,138,${twinkle})` : `rgba(165,255,245,${twinkle})`;
       ctx.arc(x, y, s.r, 0, Math.PI * 2); ctx.fill();
     }
-    if (!reduceMotion && now - lastMeteor > (smallScreen ? 9000 : 5600)) {
+    if (!reduceMotion && !lowPower && now - lastMeteor > 9000) {
       addMeteor(); lastMeteor = now;
     }
     for (let i = meteors.length - 1; i >= 0; i--) {
@@ -75,7 +75,7 @@
     if (!reduceMotion) raf = requestAnimationFrame(draw);
   }
   window.addEventListener('resize', resize, { passive: true });
-  window.addEventListener('pointermove', e => {
+  if (!lowPower) window.addEventListener('pointermove', e => {
     pointerX = (e.clientX / Math.max(1, w) - .5) * 2;
     pointerY = (e.clientY / Math.max(1, h) - .5) * 2;
   }, { passive: true });

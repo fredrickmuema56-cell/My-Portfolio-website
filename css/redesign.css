@@ -178,30 +178,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   .reveal { opacity: 1; transform: none; }
 }
 
-/* Subtle opposing 3D motion for gallery photos; transforms stay on images so page scrolling is unaffected. */
-.gallery-item:nth-child(odd) img {
-  animation: gallery-turn-forward 14s ease-in-out infinite alternate;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-}
-.gallery-item:nth-child(even) img {
-  animation: gallery-turn-reverse 14s ease-in-out infinite alternate;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-}
-@keyframes gallery-turn-forward {
-  from { transform: perspective(900px) rotateY(-5deg) scale(.985); }
-  to { transform: perspective(900px) rotateY(5deg) scale(1); }
-}
-@keyframes gallery-turn-reverse {
-  from { transform: perspective(900px) rotateY(5deg) scale(.985); }
-  to { transform: perspective(900px) rotateY(-5deg) scale(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .gallery-item:nth-child(odd) img, .gallery-item:nth-child(even) img { animation: none; }
-}
-
-
 /* Personal principles: restrained editorial panels, not generic callout boxes. */
 .principle-section { padding-top: 24px; padding-bottom: 54px; }
 .principle-card {
@@ -215,76 +191,107 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 .principle-quote span { color:var(--cyan2); }
 .principle-note { position:relative; z-index:1; max-width:650px; margin:0; color:#b8cadd; font-size:.96rem; }
 
-/* GALLERY: fast, dimensional photo cards with short light-sweep accents. */
-.gallery-grid {
-  display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:clamp(14px,2.2vw,26px); align-items:stretch; perspective:1500px;
-  perspective-origin:50% 45%;
+/* GALLERY: one slow 3D carousel. The photos travel around a shared axis,
+   rather than wobbling independently in a conventional grid. */
+.gallery-orbit-stage {
+  position:relative; height:clamp(500px,58vw,690px); margin:0 auto 34px;
+  display:grid; place-items:center; perspective:1100px; perspective-origin:50% 48%;
+  overflow:hidden; isolation:isolate;
+}
+.gallery-orbit-stage:before {
+  content:""; position:absolute; width:min(58vw,520px); aspect-ratio:1;
+  border:1px solid rgba(85,244,232,.16); border-radius:50%;
+  box-shadow:0 0 0 24px rgba(85,244,232,.018),0 0 0 52px rgba(85,244,232,.012);
+  pointer-events:none;
+}
+.gallery-orbit-ring {
+  position:absolute; left:50%; top:50%; width:0; height:0;
+  transform-style:preserve-3d; transform:rotateY(0deg);
+  will-change:transform;
 }
 .gallery-item {
-  min-width:0; margin:0 !important; padding:0 !important; overflow:visible !important;
+  position:absolute; left:0; top:0; width:clamp(185px,20vw,255px);
+  margin:0 !important; padding:0 !important; overflow:visible !important;
   background:transparent !important; border:0 !important; box-shadow:none !important;
-  border-radius:20px; perspective:1100px; transform-style:preserve-3d;
-  contain:layout style; isolation:isolate;
+  transform-style:preserve-3d;
+  backface-visibility:hidden; opacity:0;
+  animation:gallery-photo-arrive .9s ease-out both;
+  animation-delay:calc(var(--card-index) * .42s);
+  transform:translate(-50%,-50%) rotateY(var(--card-angle)) translateZ(clamp(285px,31vw,390px)) !important;
 }
 .gallery-card-inner {
-  position:relative; height:100%; overflow:hidden; border-radius:20px;
-  background:#071626; border:1px solid rgba(121,230,245,.30);
-  box-shadow:0 18px 42px rgba(0,0,0,.28), 0 0 0 1px rgba(255,255,255,.035) inset;
-  transform-style:preserve-3d; backface-visibility:hidden;
-  will-change:transform; animation:gallery-flight 5.8s cubic-bezier(.42,0,.22,1) infinite;
-  animation-delay:calc(var(--card-index, 0) * -0.47s);
-  transition:box-shadow .25s ease,border-color .25s ease;
+  position:relative; width:100%; overflow:hidden; border-radius:18px;
+  background:#071626; border:1px solid rgba(121,230,245,.38);
+  box-shadow:0 16px 34px rgba(0,0,0,.30); backface-visibility:hidden;
 }
-.gallery-item:nth-child(3n+1) .gallery-card-inner { --tilt:1; }
-.gallery-item:nth-child(3n+2) .gallery-card-inner { --tilt:-1; animation-duration:6.4s; }
-.gallery-item:nth-child(3n) .gallery-card-inner { --tilt:1; animation-duration:5.2s; }
 .gallery-item img {
-  display:block; width:100%; height:clamp(270px,34vw,440px); min-height:0 !important;
-  aspect-ratio:auto; object-fit:cover; transform:translateZ(24px) scale(1.025);
-  backface-visibility:hidden; filter:saturate(1.04) contrast(1.025);
-}
-.gallery-card-inner:before {
-  content:""; position:absolute; z-index:2; inset:-35% -80%; pointer-events:none;
-  background:linear-gradient(112deg,transparent 38%,rgba(255,255,255,.02) 45%,rgba(180,255,255,.38) 49%,rgba(255,255,255,.08) 52%,transparent 59%);
-  transform:translateX(-75%) rotate(8deg); animation:gallery-flash 5.8s ease-in-out infinite;
-  animation-delay:calc(var(--card-index, 0) * -0.47s);
+  display:block; width:100%; height:clamp(270px,31vw,365px);
+  min-height:0 !important; aspect-ratio:4/5; object-fit:cover;
 }
 .gallery-card-inner:after {
-  content:""; position:absolute; inset:45% 0 0; z-index:1; pointer-events:none;
+  content:""; position:absolute; inset:58% 0 0; z-index:1; pointer-events:none;
   background:linear-gradient(transparent,rgba(2,10,20,.72));
 }
 .gallery-item figcaption {
-  display:block !important; position:absolute; z-index:3; left:16px; right:12px; bottom:15px;
-  padding:0; color:#f5fbff; background:none; backdrop-filter:none; border-radius:0;
-  font:700 .72rem 'Space Grotesk',sans-serif; letter-spacing:.12em; text-transform:uppercase;
-  text-shadow:0 2px 12px rgba(0,0,0,.7); transform:translateZ(42px);
+  display:block !important; position:absolute; z-index:2; left:14px; right:10px; bottom:14px;
+  color:#f5fbff; font:700 .7rem 'Space Grotesk',sans-serif;
+  letter-spacing:.1em; text-transform:uppercase; text-shadow:0 2px 12px rgba(0,0,0,.75);
 }
-.gallery-item:hover .gallery-card-inner, .gallery-item:focus-within .gallery-card-inner {
-  animation-play-state:paused; border-color:rgba(85,244,232,.82);
-  box-shadow:0 28px 65px rgba(0,0,0,.4),0 0 32px rgba(85,244,232,.18);
+.gallery-item:hover .gallery-card-inner,
+.gallery-item:focus-within .gallery-card-inner { border-color:rgba(85,244,232,.85); }
+.gallery-orbit-wrap { max-width:1100px; margin-inline:auto; }
+.gallery-orbit-stage { cursor:grab; touch-action:pan-y; user-select:none; -webkit-user-select:none; }
+.gallery-orbit-stage.is-dragging { cursor:grabbing; }
+.gallery-orbit-stage:focus-visible { outline:2px solid rgba(85,244,232,.8); outline-offset:5px; border-radius:18px; }
+.gallery-orbit-controls { display:flex; align-items:center; justify-content:center; gap:22px; margin:-10px auto 22px; }
+.gallery-turn { width:42px; height:42px; display:grid; place-items:center; border:1px solid rgba(85,244,232,.38); border-radius:50%; background:rgba(5,19,35,.72); color:#eafcff; font-size:1.35rem; cursor:pointer; transition:background .18s ease,border-color .18s ease; }
+.gallery-turn:hover,.gallery-turn:focus-visible { background:rgba(85,244,232,.16); border-color:rgba(85,244,232,.85); outline:none; }
+.gallery-control-hint { color:var(--muted,#a9bacb); font-size:.68rem; font-weight:700; letter-spacing:.16em; text-align:center; }
+@media(max-width:640px) { .gallery-orbit-controls { gap:15px; } .gallery-turn { width:38px; height:38px; } .gallery-control-hint { font-size:.58rem; letter-spacing:.1em; } }
+@keyframes gallery-photo-arrive { from { opacity:0; } to { opacity:1; } }
+@media(max-width:900px) {
+  .gallery-orbit-stage { height:510px; perspective:900px; }
+  .gallery-item { width:185px; transform:translate(-50%,-50%) rotateY(var(--card-angle)) translateZ(285px) !important; }
+  .gallery-item img { height:260px; }
 }
-.gallery-item:hover img { transform:translateZ(42px) scale(1.07); filter:saturate(1.16) contrast(1.04); transition:transform .45s ease,filter .45s ease; }
-@keyframes gallery-flight {
-  0%,100% { transform:rotateY(calc(var(--tilt,1) * -8deg)) rotateX(4deg) translate3d(0,0,0) scale(.985); }
-  28% { transform:rotateY(calc(var(--tilt,1) * 5deg)) rotateX(-2deg) translate3d(0,-9px,22px) scale(1.012); }
-  52% { transform:rotateY(calc(var(--tilt,1) * 10deg)) rotateX(3deg) translate3d(0,2px,8px) scale(1.005); }
-  76% { transform:rotateY(calc(var(--tilt,1) * -3deg)) rotateX(-3deg) translate3d(0,-5px,16px) scale(1.01); }
-}
-@keyframes gallery-flash {
-  0%,64%,100% { opacity:0; transform:translateX(-75%) rotate(8deg); }
-  70% { opacity:.95; }
-  82% { opacity:.5; transform:translateX(75%) rotate(8deg); }
-}
-@media(max-width:900px) { .gallery-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .gallery-item img { height:clamp(240px,48vw,390px); } }
-@media(max-width:560px) {
-  .gallery-grid { gap:12px; grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .gallery-card-inner { border-radius:15px; }
-  .gallery-item img { height:clamp(205px,63vw,300px); }
-  .gallery-item figcaption { left:10px; bottom:10px; font-size:.58rem; letter-spacing:.07em; }
+@media(max-width:640px) {
+  .gallery-orbit-stage { height:440px; margin-bottom:20px; perspective:760px; }
+  .gallery-orbit-stage:before { width:220px; box-shadow:0 0 0 16px rgba(85,244,232,.018),0 0 0 34px rgba(85,244,232,.012); }
+  .gallery-item { width:145px; transform:translate(-50%,-50%) rotateY(var(--card-angle)) translateZ(225px) !important; }
+  .gallery-card-inner { border-radius:13px; }
+  .gallery-item img { height:205px; }
+  .gallery-item figcaption { left:9px; bottom:9px; font-size:.56rem; letter-spacing:.06em; }
 }
 @media(prefers-reduced-motion:reduce) {
-  .gallery-card-inner,.gallery-card-inner:before { animation:none !important; }
-  .gallery-card-inner { transform:none !important; will-change:auto; }
-  .gallery-item img { transform:none !important; }
+  .gallery-item { animation:none !important; opacity:1 !important; }
 }
+
+/* Low-power rendering: retain the palette and layout while avoiding expensive
+   backdrop sampling on compact devices. */
+@media(max-width:640px) {
+  .site-header, .surface, .card, .skill, .project-tile, .sci,
+  .contact-card, .photo-card, .cert-card, .cv-paper, .timeline-item,
+  .stat, .orbit-node { backdrop-filter:none; }
+  .gallery-card-inner { box-shadow:0 10px 24px rgba(0,0,0,.22); }
+}
+
+/* Hardware-aware fallback: remove decorative background loops and expensive
+   translucent sampling, while keeping the gallery's lightweight transform path. */
+.low-power-device .hero-orbit-stage,
+.low-power-device .orbit-node,
+.low-power-device .footer-orbit .planet,
+.low-power-device .sci-core,
+.low-power-device .sci-ring { animation:none !important; }
+.low-power-device .site-header,
+.low-power-device .surface,
+.low-power-device .card,
+.low-power-device .skill,
+.low-power-device .project-tile,
+.low-power-device .sci,
+.low-power-device .contact-card,
+.low-power-device .photo-card,
+.low-power-device .cert-card,
+.low-power-device .cv-paper,
+.low-power-device .timeline-item,
+.low-power-device .stat,
+.low-power-device .orbit-node { backdrop-filter:none !important; }

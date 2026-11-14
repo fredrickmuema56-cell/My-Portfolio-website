@@ -1,3 +1,9 @@
+const lowPowerDevice =
+  (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+  (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
+  Boolean(navigator.connection && navigator.connection.saveData);
+if (lowPowerDevice) document.documentElement.classList.add('low-power-device');
+
 const pages = [['index.html', 'Home'], ['about.html', 'About'], ['skills.html', 'Skills'], ['projects.html', 'Projects'], ['experience.html', 'Experience'], ['certificates.html', 'Credentials'], ['gallery.html', 'Gallery'], ['cv.html', 'CV'], ['contact.html', 'Contact']];
 
 const current = document.body.dataset.page || location.pathname.split('/').pop() || 'index.html';

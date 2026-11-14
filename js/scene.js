@@ -7,14 +7,14 @@
     (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
     Boolean(navigator.connection && navigator.connection.saveData);
   const mount = document.getElementById('three-bg');
-  if (!mount || reduce || mobile || getComputedStyle(mount).display === 'none')
+  if (!mount || reduce || mobile || lowPower || getComputedStyle(mount).display === 'none')
     return;
   try {
     const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
     const canvas = document.createElement('canvas');
     canvas.className = 'three-canvas';
     mount.appendChild(canvas);
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
     renderer.setPixelRatio(Math.min(devicePixelRatio, lowPower ? 1 : 1.5));
     renderer.setSize(innerWidth, innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
